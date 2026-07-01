@@ -3,6 +3,12 @@
 import { motion } from "framer-motion";
 
 export default function Hero() {
+  const scrollToEvents = () => {
+    document
+      .getElementById("events")
+      ?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <section className="flex min-h-screen items-center justify-center px-6 pt-20 text-center">
       <motion.div
@@ -14,11 +20,11 @@ export default function Hero() {
           🎮 Bienvenue dans la Confrérie
         </div>
 
-        <h2 className="mt-8 text-6xl font-black md:text-8xl">
+        <h1 className="mt-8 text-6xl font-black md:text-8xl">
           <span className="bg-gradient-to-r from-violet-400 via-fuchsia-300 to-cyan-400 bg-clip-text text-transparent">
-            Confrérie des chipies
+            Confrérie des Chipies
           </span>
-        </h2>
+        </h1>
 
         <p className="mx-auto mt-8 max-w-2xl text-lg text-gray-400">
           Organisez vos soirées, découvrez les prochains jeux,
@@ -27,13 +33,21 @@ export default function Hero() {
         </p>
 
         <div className="mt-10 flex flex-wrap justify-center gap-4">
-          <button className="rounded-2xl bg-violet-600 px-8 py-4 font-semibold transition hover:scale-105 hover:bg-violet-500">
+          <button
+            onClick={scrollToEvents}
+            className="rounded-2xl bg-violet-600 px-8 py-4 font-semibold transition-all duration-300 hover:scale-105 hover:bg-violet-500"
+          >
             📅 Voir les événements
           </button>
 
-          <button className="rounded-2xl border border-violet-500 px-8 py-4 transition hover:bg-violet-500/10">
+          <a
+            href="https://discord.gg/TON-LIEN"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-2xl border border-violet-500 px-8 py-4 transition-all duration-300 hover:bg-violet-500/10"
+          >
             🚀 Rejoindre Discord
-          </button>
+          </a>
         </div>
       </motion.div>
     </section>

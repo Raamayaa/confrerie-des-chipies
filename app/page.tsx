@@ -1,9 +1,11 @@
-import Background from "@/components/Background";
-import Hero from "@/components/Hero";
-import Navbar from "@/components/Navbar";
-import Stats from "@/components/Stats";
-import EventCard from "@/components/EventCard";
-import GameCard from "@/components/GameCard";
+import Background from "@/components/shared/Background";
+import Hero from "@/components/home/Hero";
+import Navbar from "@/components/layout/Navbar";
+import Stats from "@/components/home/Stats";
+import EventCard from "@/components/home/EventCard";
+import GameCard from "@/components/home/GameCard";
+import WhyJoin from "@/components/home/WhyJoin";
+import Footer from "@/components/home/Footer";
 
 import { events } from "@/data/events";
 import { games } from "@/data/games";
@@ -19,7 +21,10 @@ export default function Home() {
       <Stats />
 
       {/* Événements */}
-      <section className="mx-auto max-w-7xl px-8 py-20">
+      <section
+        id="events"
+        className="mx-auto max-w-7xl px-8 py-20"
+      >
         <div className="mb-10">
           <h2 className="text-5xl font-black">
             🔥 Prochains événements
@@ -44,7 +49,10 @@ export default function Home() {
       </section>
 
       {/* Jeux */}
-      <section className="mx-auto max-w-7xl px-8 py-20">
+      <section
+        id="games"
+        className="mx-auto max-w-7xl px-8 py-20"
+      >
         <div className="mb-10">
           <h2 className="text-5xl font-black">
             🎮 Jeux de la communauté
@@ -60,12 +68,16 @@ export default function Home() {
             <GameCard
               key={game.id}
               name={game.name}
-              emoji={game.emoji}
+              image={game.image}
               players={game.players}
             />
           ))}
         </div>
       </section>
+
+      <WhyJoin />
+
+      <Footer />
     </>
   );
 }
