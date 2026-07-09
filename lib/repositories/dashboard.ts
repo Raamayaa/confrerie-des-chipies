@@ -4,37 +4,54 @@ type EventRow = {
   id: string;
   title: string;
   event_date: string;
-  game: {
-    name: string;
-  }[];
+  game:
+    | {
+        name: string;
+      }[]
+    | null;
 };
 
 type GameRow = {
   id: string;
   name: string;
-  image: string;
-  game_players: {
-    count: number;
-  }[];
+  image: string | null;
+  game_players:
+    | {
+        count: number;
+      }[]
+    | null;
 };
 
 type ActivityRow = {
   id: string;
   action: string;
-  created_at: string;
-  profiles: {
-    username: string;
-    avatar: string | null;
-  }[];
+  created_at: string | null;
+  profiles:
+    | {
+        username: string;
+        avatar: string | null;
+      }[]
+    | null;
 };
 
 export class DashboardRepository {
   static async getStats() {
     const [games, events, profiles, ideas] = await Promise.all([
-      supabaseAdmin.from("games").select("*", { count: "exact", head: true }),
-      supabaseAdmin.from("events").select("*", { count: "exact", head: true }),
-      supabaseAdmin.from("profiles").select("*", { count: "exact", head: true }),
-      supabaseAdmin.from("ideas").select("*", { count: "exact", head: true }),
+      supabaseAdmin
+        .from("games")
+        .select("*", { count: "exact", head: true }),
+
+      supabaseAdmin
+        .from("events")
+        .select("*", { count: "exact", head: true }),
+
+      supabaseAdmin
+        .from("profiles")
+        .select("*", { count: "exact", head: true }),
+
+      supabaseAdmin
+        .from("ideas")
+        .select("*", { count: "exact", head: true }),
     ]);
 
     return {
@@ -58,10 +75,12 @@ export class DashboardRepository {
       .order("event_date")
       .limit(5);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return (
-      (data as EventRow[] | null)?.map((event) => ({
+      (data as unknown as EventRow[] | null)?.map((event) => ({
         id: event.id,
         title: event.title,
         event_date: event.event_date,
@@ -81,10 +100,12 @@ export class DashboardRepository {
       `)
       .limit(5);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return (
-      (data as GameRow[] | null)?.map((game) => ({
+      (data as unknown as GameRow[] | null)?.map((game) => ({
         id: game.id,
         name: game.name,
         image: game.image,
@@ -108,10 +129,12 @@ export class DashboardRepository {
       .order("created_at", { ascending: false })
       .limit(8);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return (
-      (data as ActivityRow[] | null)?.map((activity) => ({
+      (data as unknown as ActivityRow[] | null)?.map((activity) => ({
         id: activity.id,
         action: activity.action,
         created_at: activity.created_at,

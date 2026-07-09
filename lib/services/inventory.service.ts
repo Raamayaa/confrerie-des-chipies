@@ -1,7 +1,12 @@
-import { InventoryRepository } from "../repositories/inventory";
+import {
+  InventoryRepository,
+  type InventoryItem,
+} from "../repositories/inventory";
 
 export class InventoryService {
-  static async getInventory(profileId: string) {
+  static async getInventory(
+    profileId: string
+  ): Promise<InventoryItem[]> {
     return InventoryRepository.getInventory(profileId);
   }
 

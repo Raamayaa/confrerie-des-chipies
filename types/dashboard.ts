@@ -17,7 +17,7 @@ export type UpcomingEvent = {
 export type PopularGame = {
   id: string;
   name: string;
-  image: string;
+  image: string | null;
   game_players: {
     count: number;
   }[];
@@ -26,7 +26,7 @@ export type PopularGame = {
 export type RecentActivity = {
   id: string;
   action: string;
-  created_at: string;
+  created_at: string | null;
   profiles: {
     username: string;
     avatar: string | null;

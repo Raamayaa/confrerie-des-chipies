@@ -37,11 +37,19 @@ export default function InventoryGrid({
   const [isPending, startTransition] =
     useTransition();
 
-  async function equip(itemId: string) {
+  function equip(itemId: string) {
     startTransition(async () => {
-      await equipItemAction(itemId);
+      try {
+        await equipItemAction(itemId);
 
-      router.refresh();
+        router.refresh();
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(error.message);
+        } else {
+          alert("Une erreur est survenue.");
+        }
+      }
     });
   }
 
@@ -66,7 +74,7 @@ export default function InventoryGrid({
       {inventory.map((item) => (
         <Card
           key={item.id}
-          className={`rounded-3xl p-8 transition-all hover:-translate-y-2 hover:shadow-xl ${
+          className={`rounded-3xl border-2 p-8 transition-all hover:-translate-y-2 hover:shadow-xl ${
             rarityColors[item.rarity] ??
             rarityColors.common
           }`}
@@ -80,7 +88,8 @@ export default function InventoryGrid({
           </h2>
 
           <p className="mt-3 text-muted-foreground">
-            {item.description}
+            {item.description ??
+              "Aucune description."}
           </p>
 
           <div className="mt-3">

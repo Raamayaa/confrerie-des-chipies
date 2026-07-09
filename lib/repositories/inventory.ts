@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "../supabase/server";
 
-type InventoryItem = {
+export type InventoryItem = {
+  equipped: boolean;
   id: string;
   name: string;
   description: string | null;
@@ -10,27 +11,30 @@ type InventoryItem = {
 };
 
 export class InventoryRepository {
-  static async getInventory(profileId: string) {
-    const { data, error } = await supabaseAdmin
-      .from("profile_inventory")
-      .select(`
-        equipped,
-        inventory_items (
-          id,
-          name,
-          description,
-          type,
-          rarity,
-          image
-        )
-      `)
-      .eq("profile_id", profileId);
+  static async getInventory(
+  profileId: string
+): Promise<InventoryItem[]> {
+  const { data, error } = await supabaseAdmin
+    .from("profile_inventory")
+    .select(`
+      equipped,
+      inventory_items (
+        id,
+        name,
+        description,
+        type,
+        rarity,
+        image
+      )
+    `)
+    .eq("profile_id", profileId);
 
-    if (error) {
-      throw error;
-    }
+  if (error) {
+    throw error;
+  }
 
-    return (data ?? []).flatMap((row) => {
+  return (data ?? []).flatMap(
+    (row): InventoryItem[] => {
       const item = row.inventory_items;
 
       if (!item || Array.isArray(item)) {
@@ -39,23 +43,24 @@ export class InventoryRepository {
 
       return [
         {
-          equipped: row.equipped,
+          equipped: Boolean(row.equipped),
           id: item.id,
           name: item.name,
           description: item.description,
-          type: item.type,
+          type:
+            item.type as InventoryItem["type"],
           rarity: item.rarity,
           image: item.image,
         },
       ];
-    });
-  }
+    }
+  );
+}
 
   static async equipItem(
     profileId: string,
     itemId: string
   ) {
-    // 1️⃣ On récupère l'objet
     const { data: item, error: itemError } =
       await supabaseAdmin
         .from("inventory_items")
@@ -67,7 +72,6 @@ export class InventoryRepository {
       throw itemError ?? new Error("Objet introuvable");
     }
 
-    // 2️⃣ On déséquipe uniquement les objets du même type
     const { data: sameTypeItems } =
       await supabaseAdmin
         .from("profile_inventory")
@@ -78,7 +82,9 @@ export class InventoryRepository {
         .eq("profile_id", profileId);
 
     for (const row of sameTypeItems ?? []) {
-      const inventoryItem = Array.isArray(row.inventory_items)
+      const inventoryItem = Array.isArray(
+        row.inventory_items
+      )
         ? row.inventory_items[0]
         : row.inventory_items;
 
@@ -93,7 +99,6 @@ export class InventoryRepository {
       }
     }
 
-    // 3️⃣ On équipe le nouvel objet
     const { error } = await supabaseAdmin
       .from("profile_inventory")
       .update({
@@ -106,31 +111,30 @@ export class InventoryRepository {
       throw error;
     }
 
-    // 4️⃣ On met à jour le profil
     const updates: {
-  equipped_frame?: string;
-  equipped_banner?: string;
-  equipped_title?: string;
-  equipped_effect?: string;
-} = {};
+      equipped_frame?: string;
+      equipped_banner?: string;
+      equipped_title?: string;
+      equipped_effect?: string;
+    } = {};
 
-switch (item.type) {
-  case "frame":
-    updates.equipped_frame = item.id;
-    break;
+    switch (item.type) {
+      case "frame":
+        updates.equipped_frame = item.id;
+        break;
 
-  case "banner":
-    updates.equipped_banner = item.id;
-    break;
+      case "banner":
+        updates.equipped_banner = item.id;
+        break;
 
-  case "title":
-    updates.equipped_title = item.id;
-    break;
+      case "title":
+        updates.equipped_title = item.id;
+        break;
 
-  case "effect":
-    updates.equipped_effect = item.id;
-    break;
-}
+      case "effect":
+        updates.equipped_effect = item.id;
+        break;
+    }
 
     if (Object.keys(updates).length > 0) {
       const { error: profileError } =

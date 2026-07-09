@@ -51,11 +51,16 @@ export default async function MemberTimeline({
                 </h3>
 
                 <p className="mt-2 text-sm text-muted-foreground">
-                  {new Date(
-                    item.created_at
-                  ).toLocaleDateString("fr-FR", {
-                    dateStyle: "long",
-                  })}
+                  {item.created_at
+                    ? new Date(
+                        item.created_at
+                      ).toLocaleDateString(
+                        "fr-FR",
+                        {
+                          dateStyle: "long",
+                        }
+                      )
+                    : "Date inconnue"}
                 </p>
               </div>
             </div>
