@@ -37,7 +37,7 @@ export default async function EditEventPage({
           description: event.description ?? "",
           event_date: event.event_date?.slice(0, 16),
           discord_link: event.discord_link ?? "",
-          game_id: event.game_id,
+          game_id: event.game_id ?? undefined,
         }}
         action={updateEvent.bind(null, event.id)}
       />
