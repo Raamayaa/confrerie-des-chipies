@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-import { equipItemAction } from "@/app/inventory/actions";
+import { equipItemAction } from "@/app/inventory/inventory.actions";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
