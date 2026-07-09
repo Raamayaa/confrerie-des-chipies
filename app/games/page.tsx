@@ -1,93 +1,75 @@
-import { notFound } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 
 import Background from "@/components/shared/Background";
 import Navbar from "@/components/layout/Navbar";
-import JoinButton from "@/components/games/JoinButton";
+
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 import { GameService } from "@/lib/services/game.service";
 
-type Props = {
-  params: Promise<{
-    id: string;
-  }>;
-};
-
-export default async function GamePage({ params }: Props) {
-  const { id } = await params;
-
-  const game = await GameService.getGame(id);
-
-  if (!game) {
-    notFound();
-  }
+export default async function GamesPage() {
+  const games = await GameService.getGames();
 
   return (
     <>
       <Background />
       <Navbar />
 
-      <main className="mx-auto max-w-6xl px-8 pb-20 pt-36">
-        <div className="overflow-hidden rounded-3xl">
-          <Image
-            src={game.image}
-            alt={game.name}
-            width={1400}
-            height={500}
-            className="h-[350px] w-full object-cover"
-          />
+      <main className="mx-auto max-w-7xl px-8 pb-20 pt-36">
+        <div className="mb-12 text-center">
+          <h1 className="text-5xl font-black">
+            🎮 Jeux de la communauté
+          </h1>
+
+          <p className="mt-4 text-lg text-muted-foreground">
+            Retrouvez tous les jeux auxquels joue la communauté et rejoignez vos
+            partenaires de jeu.
+          </p>
         </div>
 
-        <div className="mt-10 flex items-center justify-between">
-          <div>
-            <h1 className="text-6xl font-black">
-              {game.name}
-            </h1>
+        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+          {games.map((game) => (
+            <Card
+              key={game.id}
+              className="overflow-hidden rounded-3xl border-0 bg-card shadow-xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+            >
+              <div className="relative h-60">
+                <Image
+                  src={game.image ?? "/images/default-game.jpg"}
+                  alt={game.name}
+                  fill
+                  className="object-cover"
+                />
 
-            <p className="mt-3 text-lg text-gray-400">
-              {game.game_players.length} joueurs participent.
-            </p>
-          </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
 
-          <JoinButton gameId={game.id} />
-        </div>
-
-        <div className="mt-16">
-          <h2 className="mb-8 text-3xl font-bold">
-            👥 Participants
-          </h2>
-
-          <div className="grid gap-6 md:grid-cols-4">
-            {game.game_players.map((player: any) => {
-              const profile = Array.isArray(player.profiles)
-                ? player.profiles[0]
-                : player.profiles;
-
-              if (!profile) return null;
-
-              return (
-                <div
-                  key={player.id}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur-xl"
-                >
-                  <Image
-                    src={
-                      profile.avatar ??
-                      "https://cdn.discordapp.com/embed/avatars/0.png"
-                    }
-                    alt={profile.username}
-                    width={80}
-                    height={80}
-                    className="mx-auto rounded-full"
-                  />
-
-                  <p className="mt-4 font-semibold">
-                    {profile.username}
-                  </p>
+                <div className="absolute bottom-5 left-5">
+                  <h2 className="text-3xl font-black text-white">
+                    {game.name}
+                  </h2>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+
+              <div className="p-6">
+                <p className="line-clamp-3 text-muted-foreground">
+                  {game.description ??
+                    "Aucune description disponible pour ce jeu."}
+                </p>
+
+                <div className="mt-6 flex items-center justify-between">
+                  <span className="rounded-full bg-violet-500/10 px-4 py-2 text-sm font-semibold text-violet-400">
+  🎮 Jeu disponible
+</span>
+
+                  <Link href={`/games/${game.id}`}>
+                    <Button>Voir</Button>
+                  </Link>
+                </div>
+              </div>
+            </Card>
+          ))}
         </div>
       </main>
     </>
