@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { supabaseBrowser } from "@/lib/supabase/client";
+import { supabaseClient } from "@/lib/supabase/client";
 
 type Props = {
   value: string;
@@ -25,13 +25,13 @@ export default function GameImageUpload({
 
       const filename = `${crypto.randomUUID()}.${extension}`;
 
-      const { error } = await supabaseBrowser.storage
+      const { error } = await supabaseClient.storage
         .from("games")
         .upload(filename, file);
 
       if (error) throw error;
 
-      const { data } = supabaseBrowser.storage
+      const { data } = supabaseClient.storage
         .from("games")
         .getPublicUrl(filename);
 
