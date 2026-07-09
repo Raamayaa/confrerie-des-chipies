@@ -12,9 +12,14 @@ type Event = {
   title: string;
   event_date: string;
   discord_link?: string | null;
-  game?: {
-    name: string;
-  };
+
+  game:
+    | {
+        id: string;
+        name: string;
+        image: string | null;
+      }
+    | null;
 };
 
 type Props = {
