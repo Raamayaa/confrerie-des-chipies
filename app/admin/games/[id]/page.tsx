@@ -32,7 +32,7 @@ export default async function EditGamePage({
       <GameForm
         defaultValues={{
           name: game.name,
-          image: game.image,
+          image: game.image ?? undefined,
           description: game.description ?? "",
         }}
         action={updateGame.bind(null, id)}
