@@ -1,25 +1,25 @@
+import { notFound } from "next/navigation";
+import Image from "next/image";
+
 import Background from "@/components/shared/Background";
 import Navbar from "@/components/layout/Navbar";
-import GameCard from "@/components/home/GameCard";
-import { supabase } from "@/lib/supabase";
+import JoinButton from "@/components/games/JoinButton";
 
-export default async function GamesPage() {
-  const { data: games, error } = await supabase
-    .from("games")
-    .select("*")
-    .order("name");
+import { GameService } from "@/lib/services/game.service";
 
-  if (error) {
-    return (
-      <>
-        <Navbar />
-        <main className="mx-auto max-w-7xl px-8 pt-36">
-          <h1 className="text-red-500 text-2xl">
-            Erreur : {error.message}
-          </h1>
-        </main>
-      </>
-    );
+type Props = {
+  params: Promise<{
+    id: string;
+  }>;
+};
+
+export default async function GamePage({ params }: Props) {
+  const { id } = await params;
+
+  const game = await GameService.getGame(id);
+
+  if (!game) {
+    notFound();
   }
 
   return (
@@ -27,26 +27,67 @@ export default async function GamesPage() {
       <Background />
       <Navbar />
 
-      <main className="mx-auto max-w-7xl px-8 pt-36 pb-20">
-        <div className="mb-12">
-          <h1 className="text-6xl font-black">
-            🎮 Jeux
-          </h1>
-
-          <p className="mt-4 text-lg text-gray-400">
-            Tous les jeux de la Confrérie.
-          </p>
+      <main className="mx-auto max-w-6xl px-8 pb-20 pt-36">
+        <div className="overflow-hidden rounded-3xl">
+          <Image
+            src={game.image}
+            alt={game.name}
+            width={1400}
+            height={500}
+            className="h-[350px] w-full object-cover"
+          />
         </div>
 
-        <div className="grid gap-8 md:grid-cols-3">
-          {games?.map((game) => (
-            <GameCard
-              key={game.id}
-              name={game.name}
-              image={game.image}
-              players={0}
-            />
-          ))}
+        <div className="mt-10 flex items-center justify-between">
+          <div>
+            <h1 className="text-6xl font-black">
+              {game.name}
+            </h1>
+
+            <p className="mt-3 text-lg text-gray-400">
+              {game.game_players.length} joueurs participent.
+            </p>
+          </div>
+
+          <JoinButton gameId={game.id} />
+        </div>
+
+        <div className="mt-16">
+          <h2 className="mb-8 text-3xl font-bold">
+            👥 Participants
+          </h2>
+
+          <div className="grid gap-6 md:grid-cols-4">
+            {game.game_players.map((player: any) => {
+              const profile = Array.isArray(player.profiles)
+                ? player.profiles[0]
+                : player.profiles;
+
+              if (!profile) return null;
+
+              return (
+                <div
+                  key={player.id}
+                  className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur-xl"
+                >
+                  <Image
+                    src={
+                      profile.avatar ??
+                      "https://cdn.discordapp.com/embed/avatars/0.png"
+                    }
+                    alt={profile.username}
+                    width={80}
+                    height={80}
+                    className="mx-auto rounded-full"
+                  />
+
+                  <p className="mt-4 font-semibold">
+                    {profile.username}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </main>
     </>

@@ -1,46 +1,65 @@
-"use client";
-
 import Image from "next/image";
-import { Users } from "lucide-react";
+import Link from "next/link";
+
+type Avatar = {
+  id: string;
+  username: string;
+  avatar: string | null;
+};
 
 type Props = {
+  id: string;
   name: string;
   image: string;
   players: number;
+  avatars: Avatar[];
 };
 
 export default function GameCard({
+  id,
   name,
   image,
   players,
+  avatars,
 }: Props) {
   return (
-    <div className="group overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 hover:border-violet-500/40 hover:shadow-2xl hover:shadow-violet-500/20">
-
-      <div className="relative h-56 overflow-hidden">
+    <Link href={`/games/${id}`}>
+      <article className="overflow-hidden rounded-3xl border bg-card transition hover:-translate-y-1 hover:shadow-xl">
         <Image
           src={image}
           alt={name}
-          fill
-          className="object-cover transition duration-500 group-hover:scale-110"
+          width={600}
+          height={320}
+          className="h-56 w-full object-cover"
         />
-      </div>
+        <div className="space-y-5 p-6">
+          <div>
+            <h3 className="text-2xl font-bold">
+              {name}
+            </h3>
 
-      <div className="p-6">
-        <h3 className="text-2xl font-bold">
-          {name}
-        </h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {players} joueur{players > 1 ? "s" : ""}
+            </p>
+          </div>
 
-        <div className="mt-4 flex items-center gap-2 text-gray-400">
-          <Users size={18} />
-          {players} joueurs
+          <div className="flex -space-x-3">
+            {avatars.slice(0, 5).map((player) => (
+              <Image
+                key={player.id}
+                src={
+                  player.avatar ??
+                  "https://cdn.discordapp.com/embed/avatars/0.png"
+                }
+                alt={player.username}
+                width={38}
+                height={38}
+                className="rounded-full border-2 border-background"
+              />
+            ))}
+          </div>
         </div>
-
-        <button className="mt-6 w-full rounded-xl bg-violet-600 py-3 font-semibold transition hover:bg-violet-500">
-          🎮 Je joue
-        </button>
-      </div>
-
-    </div>
+      </article>
+    </Link>
   );
 }

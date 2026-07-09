@@ -7,10 +7,28 @@ import GameCard from "@/components/home/GameCard";
 import WhyJoin from "@/components/home/WhyJoin";
 import Footer from "@/components/home/Footer";
 
-import { events } from "@/data/events";
-import { games } from "@/data/games";
+import { supabase } from "@/lib/supabase";
 
-export default function Home() {
+export default async function Home() {
+  const { data: games } = await supabase
+    .from("games")
+    .select(`
+      id,
+      name,
+      image,
+      game_players(
+        id,
+        username,
+        avatar
+      )
+    `)
+    .order("name");
+
+  const { data: events } = await supabase
+    .from("events")
+    .select("*")
+    .order("date", { ascending: true });
+
   return (
     <>
       <Background />
@@ -31,12 +49,12 @@ export default function Home() {
           </h2>
 
           <p className="mt-2 text-gray-400">
-            Rejoins les prochaines soirées de la communauté.
+            Les prochaines soirées de la Confrérie.
           </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3">
-          {events.map((event) => (
+          {events?.map((event) => (
             <EventCard
               key={event.id}
               game={event.game}
@@ -59,17 +77,19 @@ export default function Home() {
           </h2>
 
           <p className="mt-2 text-gray-400">
-            Les jeux préférés des Chipies.
+            Tous les jeux disponibles.
           </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3">
-          {games.map((game) => (
+          {games?.map((game) => (
             <GameCard
               key={game.id}
+              id={game.id}
               name={game.name}
               image={game.image}
-              players={game.players}
+              players={game.game_players.length}
+              avatars={game.game_players}
             />
           ))}
         </div>
