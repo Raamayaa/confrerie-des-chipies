@@ -88,7 +88,9 @@ export default async function ActivityFeed() {
                 </p>
 
                 <p className="mt-2 text-xs text-muted-foreground">
-                  {formatDate(activity.created_at)}
+                  {activity.created_at
+  ? formatDate(activity.created_at)
+  : "-"}
                 </p>
               </div>
             </div>
