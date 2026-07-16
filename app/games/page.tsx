@@ -36,7 +36,9 @@ export default async function GamesPage() {
           </h1>
 
           <p className="mt-4 text-lg text-muted-foreground">
-            Rejoins les jeux de la communauté et gagne de l&aposXP.
+            <p>
+  Rejoins les jeux de la communauté et gagne de l&apos;XP.
+</p>
           </p>
         </div>
 

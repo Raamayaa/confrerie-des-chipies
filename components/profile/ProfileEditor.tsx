@@ -26,24 +26,12 @@ type Props = {
 export default function ProfileEditor({
   profile,
 }: Props) {
-  const [username, setUsername] = useState(
-    profile.username
-  );
+  const [username, setUsername] = useState(profile.username);
+  const [bio, setBio] = useState(profile.bio ?? "");
+  const [avatar, setAvatar] = useState<string | null>(profile.avatar);
+  const [banner, setBanner] = useState<string | null>(profile.banner);
 
-  const [bio, setBio] = useState(
-    profile.bio ?? ""
-  );
-
-  const [avatar, setAvatar] = useState<string | null>(
-    profile.avatar
-  );
-
-  const [banner, setBanner] = useState<string | null>(
-    profile.banner
-  );
-
-  const [isPending, startTransition] =
-    useTransition();
+  const [isPending, startTransition] = useTransition();
 
   async function handleAvatarUpload(file: File) {
     try {
@@ -59,10 +47,7 @@ export default function ProfileEditor({
       toast.success("Avatar mis à jour !");
     } catch (error) {
       console.error(error);
-
-      toast.error(
-        "Impossible d'envoyer l'avatar."
-      );
+      toast.error("Impossible d'envoyer l'avatar.");
     }
   }
 
@@ -80,10 +65,7 @@ export default function ProfileEditor({
       toast.success("Bannière mise à jour !");
     } catch (error) {
       console.error(error);
-
-      toast.error(
-        "Impossible d'envoyer la bannière."
-      );
+      toast.error("Impossible d'envoyer la bannière.");
     }
   }
 
@@ -97,24 +79,19 @@ export default function ProfileEditor({
           banner: banner ?? undefined,
         });
 
-        toast.success(
-          "Profil enregistré avec succès !"
-        );
+        toast.success("Profil enregistré avec succès !");
       } catch (error) {
         console.error(error);
-
-        toast.error(
-          "Impossible d'enregistrer le profil."
-        );
+        toast.error("Impossible d'enregistrer le profil.");
       }
     });
   }
 
   return (
-    <Card className="space-y-10 rounded-3xl p-8">
+    <Card className="space-y-10 rounded-3xl border border-violet-500/20 bg-zinc-900/80 p-8 backdrop-blur-xl shadow-2xl shadow-violet-500/10">
 
-      {/* Aperçu du profil */}
-      <div className="overflow-hidden rounded-3xl border bg-card shadow-xl">
+      {/* Aperçu */}
+      <div className="overflow-hidden rounded-3xl border border-violet-500/20 bg-zinc-800/70 shadow-xl">
 
         <div
           className="relative h-48 bg-cover bg-center"
@@ -141,61 +118,64 @@ export default function ProfileEditor({
             alt={username}
             width={128}
             height={128}
-            className="h-32 w-32 rounded-full border-4 border-background object-cover shadow-xl"
+            className="h-32 w-32 rounded-full border-4 border-zinc-900 object-cover shadow-xl"
           />
 
-          <h2 className="mt-5 text-3xl font-black">
+          <h2 className="mt-5 text-3xl font-black text-white">
             {username}
           </h2>
 
-          <p className="mt-3 max-w-2xl text-center text-muted-foreground">
-            {bio ||
-              "Aucune bio pour le moment."}
+          <p className="mt-3 max-w-2xl text-center text-gray-300">
+            {bio || "Aucune bio pour le moment."}
           </p>
+
         </div>
 
       </div>
 
-      {/* Formulaire */}
+      {/* Titre */}
       <div>
 
-        <h1 className="text-3xl font-black">
+        <h1 className="text-3xl font-black text-white">
           Mon profil
         </h1>
 
-        <p className="mt-2 text-muted-foreground">
+        <p className="mt-2 text-gray-400">
           Personnalisez votre profil.
         </p>
 
       </div>
 
+      {/* Formulaire */}
       <div className="space-y-6">
 
         <div>
-          <label className="mb-2 block text-sm font-medium">
+
+          <label className="mb-2 block text-sm font-medium text-white">
             Pseudo
           </label>
 
           <Input
             value={username}
-            onChange={(e) =>
-              setUsername(e.target.value)
-            }
+            onChange={(e) => setUsername(e.target.value)}
+            className="border-zinc-700 bg-zinc-800 text-white placeholder:text-gray-500"
           />
+
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium">
+
+          <label className="mb-2 block text-sm font-medium text-white">
             Bio
           </label>
 
           <Textarea
             rows={5}
             value={bio}
-            onChange={(e) =>
-              setBio(e.target.value)
-            }
+            onChange={(e) => setBio(e.target.value)}
+            className="border-zinc-700 bg-zinc-800 text-white placeholder:text-gray-500"
           />
+
         </div>
 
         <UploadImage
@@ -211,9 +191,9 @@ export default function ProfileEditor({
         />
 
         <Button
-          className="w-full"
-          disabled={isPending}
           onClick={save}
+          disabled={isPending}
+          className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white transition hover:opacity-90"
         >
           {isPending
             ? "💾 Enregistrement..."

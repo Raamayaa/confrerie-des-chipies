@@ -17,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Confrérie des Chipies",
-  description: "Plateforme officielle de la communauté gaming Confrérie des Chipies.",
+  description:
+    "Plateforme officielle de la communauté gaming Confrérie des Chipies.",
 };
 
 export default function RootLayout({
@@ -32,18 +33,16 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-black text-white">
-  <AuthProvider>
-    {children}
-  </AuthProvider>
-</body>
-<AuthProvider>
-  {children}
-  <Toaster
-    richColors
-    position="bottom-right"
-    closeButton
-  />
-</AuthProvider>
+        <AuthProvider>
+          {children}
+
+          <Toaster
+            richColors
+            position="bottom-right"
+            closeButton
+          />
+        </AuthProvider>
+      </body>
     </html>
   );
 }

@@ -4,12 +4,20 @@ import Discord, {
 } from "next-auth/providers/discord";
 import { createClient } from "@supabase/supabase-js";
 
+console.log("AUTH_URL =", process.env.AUTH_URL);
+console.log("DISCORD_ID =", process.env.AUTH_DISCORD_ID);
+console.log("DISCORD_SECRET =", process.env.AUTH_DISCORD_SECRET ? "OK" : "MANQUANT");
+console.log("SUPABASE_URL =", process.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log("SERVICE_ROLE =", process.env.SUPABASE_SERVICE_ROLE_KEY ? "OK" : "MANQUANT");
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  debug: true,
+
   providers: [
     Discord({
       clientId: process.env.AUTH_DISCORD_ID!,
@@ -53,6 +61,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             .single();
 
           if (error) {
+            console.error("Erreur création profil :", error);
             throw error;
           }
 
@@ -62,13 +71,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           profileId = existing.id;
           coins = existing.coins;
 
-          await supabase
+          const { error: updateError } = await supabase
             .from("profiles")
             .update({
               username,
               avatar,
             })
             .eq("id", profileId);
+
+          if (updateError) {
+            console.error("Erreur mise à jour profil :", updateError);
+          }
         }
 
         token.profileId = profileId;

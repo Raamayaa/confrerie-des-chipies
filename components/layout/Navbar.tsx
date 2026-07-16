@@ -24,9 +24,40 @@ import {
 } from "next-auth/react";
 
 export default function Navbar() {
-  const { data: session } = useSession();
+  const {
+    data: session,
+    status,
+  } = useSession();
+
+  console.log("STATUS :", status);
+  console.log("SESSION :", session);
+
+  if (status === "loading") {
+    return (
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/40 backdrop-blur-xl">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+          <div className="flex items-center gap-3">
+            <div className="h-12 w-12 animate-pulse rounded-2xl bg-violet-500/30" />
+
+            <div>
+              <div className="h-5 w-48 animate-pulse rounded bg-white/10" />
+              <div className="mt-2 h-3 w-32 animate-pulse rounded bg-white/10" />
+            </div>
+          </div>
+
+          <div className="text-sm text-gray-400">
+            Chargement...
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   const user = session?.user;
+  console.log("USER :", user);
+console.log("COINS :", user?.coins);
+console.log("IMAGE :", user?.image);
+console.log("NAME :", user?.name);
 
   const links = [
     {
@@ -74,7 +105,6 @@ export default function Navbar() {
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/40 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
 
-        {/* Logo */}
         <Link
           href="/"
           className="flex items-center gap-3 transition-opacity hover:opacity-90"
@@ -97,7 +127,6 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* Navigation */}
         <nav className="hidden items-center gap-8 md:flex">
           {links.map((link) => {
             const Icon = link.icon;
@@ -128,7 +157,6 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* Partie utilisateur */}
         {user ? (
           <div className="flex items-center gap-4">
 
@@ -152,10 +180,10 @@ export default function Navbar() {
             </Link>
 
             <div className="hidden rounded-full bg-yellow-500/10 px-4 py-2 font-bold text-yellow-400 lg:block">
-              🪙 {user.coins.toLocaleString("fr-FR")}
+              🪙 {(user.coins ?? 0).toLocaleString("fr-FR")}
             </div>
 
-            {user.image && (
+            {user?.image && (
               <Image
                 src={user.image}
                 alt={user.name ?? "Avatar"}
@@ -186,7 +214,11 @@ export default function Navbar() {
           </div>
         ) : (
           <button
-            onClick={() => signIn("discord")}
+            onClick={() =>
+              signIn("discord", {
+                callbackUrl: "/profile",
+              })
+            }
             className="flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-3 font-semibold text-white transition hover:bg-violet-500"
           >
             <LogIn size={18} />

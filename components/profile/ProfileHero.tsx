@@ -27,7 +27,7 @@ export default function ProfileHero({
     (progress.current / progress.required) * 100;
 
   return (
-    <section className="overflow-hidden rounded-3xl border bg-card shadow-xl">
+    <section className="overflow-hidden rounded-3xl border border-violet-500/20 bg-zinc-900/80 backdrop-blur-xl shadow-2xl shadow-violet-500/10">
 
       <div
         className="h-56 bg-cover bg-center"
@@ -46,9 +46,9 @@ export default function ProfileHero({
 
       <div className="-mt-16 px-8 pb-8">
 
-        <div className="flex flex-col items-center md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col items-center gap-6 md:flex-row md:items-end md:justify-between">
 
-          <div className="flex flex-col items-center md:flex-row md:items-end gap-6">
+          <div className="flex flex-col items-center gap-6 md:flex-row md:items-end">
 
             <Image
               src={
@@ -58,16 +58,16 @@ export default function ProfileHero({
               alt={profile.username}
               width={140}
               height={140}
-              className="rounded-full border-4 border-background object-cover shadow-xl"
+              className="rounded-full border-4 border-zinc-900 object-cover shadow-xl"
             />
 
             <div>
 
-              <h1 className="text-4xl font-black">
+              <h1 className="text-4xl font-black text-white">
                 {profile.username}
               </h1>
 
-              <p className="mt-2 text-muted-foreground">
+              <p className="mt-2 text-gray-300">
                 {profile.bio ||
                   "Aucune bio renseignée."}
               </p>
@@ -82,7 +82,7 @@ export default function ProfileHero({
               🪙 {profile.coins.toLocaleString("fr-FR")}
             </div>
 
-            <div className="mt-2 text-sm text-muted-foreground">
+            <div className="mt-2 text-sm text-gray-400">
               Rang #{rank ?? "-"}
             </div>
 
@@ -92,7 +92,7 @@ export default function ProfileHero({
 
         <div className="mt-8">
 
-          <div className="mb-2 flex justify-between text-sm">
+          <div className="mb-2 flex justify-between text-sm text-gray-300">
 
             <span>
               Niveau {progress.level}
@@ -104,10 +104,10 @@ export default function ProfileHero({
 
           </div>
 
-          <div className="h-4 overflow-hidden rounded-full bg-white/10">
+          <div className="h-4 overflow-hidden rounded-full bg-zinc-800">
 
             <div
-              className="h-full rounded-full bg-gradient-to-r from-violet-500 to-cyan-500 transition-all"
+              className="h-full rounded-full bg-gradient-to-r from-violet-500 via-blue-500 to-cyan-500 transition-all duration-500"
               style={{
                 width: `${percentage}%`,
               }}

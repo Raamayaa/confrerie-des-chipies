@@ -50,48 +50,48 @@ export default function ShopItem({
     useTransition();
 
   function buy() {
-  startTransition(async () => {
-    try {
-      await buyItemAction(item.id);
+    startTransition(async () => {
+      try {
+        await buyItemAction(item.id);
 
-      toast.success("Objet acheté !", {
-        description: `${item.name} a été ajouté à votre inventaire.`,
-      });
-
-      router.refresh();
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error("Achat impossible", {
-          description: error.message,
+        toast.success("Objet acheté !", {
+          description: `${item.name} a été ajouté à votre inventaire.`,
         });
+
+        router.refresh();
+      } catch (error) {
+        if (error instanceof Error) {
+          toast.error("Achat impossible", {
+            description: error.message,
+          });
+        }
       }
-    }
-  });
-}
+    });
+  }
 
-function equip() {
-  startTransition(async () => {
-    try {
-      await equipItemAction(item.id);
+  function equip() {
+    startTransition(async () => {
+      try {
+        await equipItemAction(item.id);
 
-      toast.success("Objet équipé !", {
-        description: `${item.name} est maintenant équipé.`,
-      });
-
-      router.refresh();
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error("Impossible d'équiper l'objet", {
-          description: error.message,
+        toast.success("Objet équipé !", {
+          description: `${item.name} est maintenant équipé.`,
         });
+
+        router.refresh();
+      } catch (error) {
+        if (error instanceof Error) {
+          toast.error("Impossible d'équiper l'objet", {
+            description: error.message,
+          });
+        }
       }
-    }
-  });
-}
+    });
+  }
 
   return (
     <Card
-      className={`rounded-3xl border-2 p-6 transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-2xl ${
+      className={`rounded-3xl border-2 bg-zinc-900/80 backdrop-blur-xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-2 hover:scale-[1.03] hover:shadow-2xl ${
         rarityBorder[
           item.rarity as keyof typeof rarityBorder
         ] ?? rarityBorder.common
@@ -102,22 +102,24 @@ function equip() {
       }`}
     >
       {/* Icône */}
-      <div className="text-center text-6xl">
-        {item.image ??
-          icons[
-            item.type as keyof typeof icons
-          ] ??
-          "📦"}
+      <div className="flex justify-center">
+        <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-violet-500/20 to-cyan-500/20 text-6xl">
+          {item.image ??
+            icons[
+              item.type as keyof typeof icons
+            ] ??
+            "📦"}
+        </div>
       </div>
 
       {/* Nom */}
-      <h2 className="mt-4 text-center text-2xl font-black">
+      <h2 className="mt-6 text-center text-2xl font-black text-white">
         {item.name}
       </h2>
 
       {/* Rareté */}
       <p
-        className={`mt-2 text-center text-sm font-bold uppercase tracking-wide ${
+        className={`mt-2 text-center text-sm font-bold uppercase tracking-widest ${
           rarityColors[
             item.rarity as keyof typeof rarityColors
           ] ?? "text-slate-400"
@@ -127,20 +129,23 @@ function equip() {
       </p>
 
       {/* Type */}
-      <p className="mt-2 text-center capitalize text-muted-foreground">
+      <p className="mt-2 text-center capitalize text-gray-400">
         {item.type}
       </p>
 
-      {/* Prix + bouton */}
-      <div className="mt-6 flex items-center justify-between">
-        <span className="text-lg font-bold text-yellow-500">
-          🪙 {item.price}
+      {/* Prix */}
+      <div className="mt-8 flex justify-center">
+        <span className="rounded-full border border-yellow-500/20 bg-yellow-500/10 px-4 py-2 text-lg font-bold text-yellow-400">
+          🪙 {item.price.toLocaleString("fr-FR")}
         </span>
+      </div>
 
+      {/* Bouton */}
+      <div className="mt-8">
         {equipped ? (
           <Button
             disabled
-            variant="secondary"
+            className="w-full rounded-xl bg-emerald-600 text-white"
           >
             ✅ Équipé
           </Button>
@@ -148,16 +153,20 @@ function equip() {
           <Button
             disabled={isPending}
             onClick={equip}
+            className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white hover:opacity-90"
           >
             ⚡ Équiper
           </Button>
         ) : (
           <Button
-  disabled={isPending}
-  onClick={buy}
->
-  {isPending ? "⏳ Achat..." : "🛒 Acheter"}
-</Button>
+            disabled={isPending}
+            onClick={buy}
+            className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white hover:opacity-90"
+          >
+            {isPending
+              ? "⏳ Achat..."
+              : "🛒 Acheter"}
+          </Button>
         )}
       </div>
     </Card>
