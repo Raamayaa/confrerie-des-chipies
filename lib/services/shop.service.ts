@@ -1,11 +1,17 @@
 import { ShopRepository } from "../repositories/shop";
 
 export class ShopService {
-  static getItems() {
+  /**
+   * Tous les objets de la boutique.
+   */
+  static async getItems() {
     return ShopRepository.getItems();
   }
 
-  static buyItem(
+  /**
+   * Achète un objet.
+   */
+  static async buyItem(
     profileId: string,
     itemId: string
   ) {
@@ -15,8 +21,14 @@ export class ShopService {
     );
   }
 
-  static getOwnedItems(profileId: string) {
-  return ShopRepository.getOwnedItems(profileId);
-}
-
+  /**
+   * Objets possédés par un membre.
+   */
+  static async getOwnedItems(
+    profileId: string
+  ) {
+    return ShopRepository.getOwnedItems(
+      profileId
+    );
+  }
 }

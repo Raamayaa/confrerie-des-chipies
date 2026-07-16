@@ -1,29 +1,51 @@
-import { NotificationsRepository } from "../repositories/notifications";
+import { NotificationRepository } from "../repositories/notification";
+
+export type NotificationType =
+  | "level"
+  | "achievement"
+  | "game"
+  | "event"
+  | "shop"
+  | "idea"
+  | "system";
 
 export class NotificationService {
-  static latest(profileId: string) {
-    return NotificationsRepository.latest(profileId);
-  }
-
-  static unread(profileId: string) {
-    return NotificationsRepository.unread(profileId);
-  }
-
-  static create(
+  /**
+   * Crée une notification.
+   */
+  static async create(
     profileId: string,
     title: string,
     message: string,
-    link?: string
+    type: NotificationType = "system"
   ) {
-    return NotificationsRepository.create(
+    return NotificationRepository.create(
       profileId,
       title,
       message,
-      link
+      type
     );
   }
 
-  static read(id: string) {
-    return NotificationsRepository.read(id);
+  /**
+   * Récupère les notifications d'un membre.
+   */
+  static async getByProfile(
+    profileId: string
+  ) {
+    return NotificationRepository.getByProfile(
+      profileId
+    );
+  }
+
+  /**
+   * Marque toutes les notifications comme lues.
+   */
+  static async markAllAsRead(
+    profileId: string
+  ) {
+    return NotificationRepository.markAllAsRead(
+      profileId
+    );
   }
 }

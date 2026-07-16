@@ -18,16 +18,14 @@ export type PopularGame = {
   id: string;
   name: string;
   image: string | null;
-  game_players: {
-    count: number;
-  }[];
+  players: number;
 };
 
 export type RecentActivity = {
   id: string;
-  action: string;
+  message: string;
   created_at: string | null;
-  profiles: {
+  profile: {
     username: string;
     avatar: string | null;
   } | null;

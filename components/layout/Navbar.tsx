@@ -4,10 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 import {
+  Bell,
+  Bug,
+  Users,
   Gamepad2,
   Lightbulb,
   CalendarDays,
   ShoppingBag,
+  Trophy,
   User,
   LogIn,
   LogOut,
@@ -21,6 +25,8 @@ import {
 
 export default function Navbar() {
   const { data: session } = useSession();
+
+  const user = session?.user;
 
   const links = [
     {
@@ -38,6 +44,16 @@ export default function Navbar() {
       icon: Gamepad2,
     },
     {
+      href: "/members",
+      label: "Membres",
+      icon: Users,
+    },
+    {
+      href: "/leaderboard",
+      label: "Classement",
+      icon: Trophy,
+    },
+    {
       href: "/ideas",
       label: "Idées",
       icon: Lightbulb,
@@ -47,11 +63,17 @@ export default function Navbar() {
       label: "Boutique",
       icon: ShoppingBag,
     },
+    {
+      href: "/achievements",
+      label: "Succès",
+      icon: Trophy,
+    },
   ];
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/40 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+
         {/* Logo */}
         <Link
           href="/"
@@ -95,30 +117,48 @@ export default function Navbar() {
             );
           })}
 
-          {session && (
+          {user && (
             <Link
               href="/profile"
               className="flex items-center gap-2 text-gray-300 transition-colors hover:text-violet-400"
             >
               <User className="h-4 w-4" />
-
               Profil
             </Link>
           )}
         </nav>
 
-        {/* Utilisateur */}
-        {session?.user ? (
+        {/* Partie utilisateur */}
+        {user ? (
           <div className="flex items-center gap-4">
-            {/* Les pièces seront affichées ici plus tard */}
-            <div className="hidden rounded-full bg-yellow-500/10 px-4 py-2 font-bold text-yellow-400 lg:block">
-  🪙 {session.user.coins.toLocaleString("fr-FR")}
-</div>
 
-            {session.user.image && (
+            <Link
+              href="/ideas"
+              className="hidden items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-300 transition hover:bg-red-500/20 lg:flex"
+            >
+              <Bug className="h-4 w-4" />
+              Bug / Idée
+            </Link>
+
+            <Link
+              href="/notifications"
+              className="relative rounded-xl p-3 text-gray-300 transition hover:bg-white/10 hover:text-white"
+            >
+              <Bell className="h-5 w-5" />
+
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                0
+              </span>
+            </Link>
+
+            <div className="hidden rounded-full bg-yellow-500/10 px-4 py-2 font-bold text-yellow-400 lg:block">
+              🪙 {user.coins.toLocaleString("fr-FR")}
+            </div>
+
+            {user.image && (
               <Image
-                src={session.user.image}
-                alt={session.user.name ?? "Avatar"}
+                src={user.image}
+                alt={user.name ?? "Avatar"}
                 width={44}
                 height={44}
                 className="rounded-full border-2 border-violet-500"
@@ -127,7 +167,7 @@ export default function Navbar() {
 
             <div className="hidden text-right lg:block">
               <p className="font-semibold text-white">
-                {session.user.name}
+                {user.name}
               </p>
 
               <p className="text-xs text-gray-400">
@@ -140,9 +180,9 @@ export default function Navbar() {
               className="flex items-center gap-2 rounded-xl bg-red-500 px-5 py-3 font-semibold text-white transition hover:bg-red-400"
             >
               <LogOut size={18} />
-
               Déconnexion
             </button>
+
           </div>
         ) : (
           <button
@@ -150,7 +190,6 @@ export default function Navbar() {
             className="flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-3 font-semibold text-white transition hover:bg-violet-500"
           >
             <LogIn size={18} />
-
             Se connecter
           </button>
         )}

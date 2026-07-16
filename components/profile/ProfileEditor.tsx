@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
 
 import { updateProfileAction } from "@/app/profile/actions";
 import { uploadImageAction } from "@/app/profile/upload-action";
@@ -53,9 +55,14 @@ export default function ProfileEditor({
       const url = await uploadImageAction(formData);
 
       setAvatar(url);
+
+      toast.success("Avatar mis à jour !");
     } catch (error) {
       console.error(error);
-      alert("Impossible d'envoyer l'avatar.");
+
+      toast.error(
+        "Impossible d'envoyer l'avatar."
+      );
     }
   }
 
@@ -69,38 +76,89 @@ export default function ProfileEditor({
       const url = await uploadImageAction(formData);
 
       setBanner(url);
+
+      toast.success("Bannière mise à jour !");
     } catch (error) {
       console.error(error);
-      alert("Impossible d'envoyer la bannière.");
+
+      toast.error(
+        "Impossible d'envoyer la bannière."
+      );
     }
   }
 
   function save() {
     startTransition(async () => {
       try {
-        console.log("Envoi du profil...");
-
-        const result = await updateProfileAction({
+        await updateProfileAction({
           username,
           bio,
           avatar: avatar ?? undefined,
           banner: banner ?? undefined,
         });
 
-        console.log("Résultat :", result);
-
-        alert("Profil enregistré !");
+        toast.success(
+          "Profil enregistré avec succès !"
+        );
       } catch (error) {
-        console.error("Erreur :", error);
+        console.error(error);
 
-        alert(JSON.stringify(error, null, 2));
+        toast.error(
+          "Impossible d'enregistrer le profil."
+        );
       }
     });
   }
 
   return (
-    <Card className="space-y-8 p-8">
+    <Card className="space-y-10 rounded-3xl p-8">
+
+      {/* Aperçu du profil */}
+      <div className="overflow-hidden rounded-3xl border bg-card shadow-xl">
+
+        <div
+          className="relative h-48 bg-cover bg-center"
+          style={{
+            backgroundImage: banner
+              ? `url(${banner})`
+              : undefined,
+          }}
+        >
+          {!banner && (
+            <div className="flex h-full items-center justify-center text-6xl">
+              🌌
+            </div>
+          )}
+        </div>
+
+        <div className="-mt-16 flex flex-col items-center px-6 pb-8">
+
+          <Image
+            src={
+              avatar ??
+              "https://placehold.co/160x160"
+            }
+            alt={username}
+            width={128}
+            height={128}
+            className="h-32 w-32 rounded-full border-4 border-background object-cover shadow-xl"
+          />
+
+          <h2 className="mt-5 text-3xl font-black">
+            {username}
+          </h2>
+
+          <p className="mt-3 max-w-2xl text-center text-muted-foreground">
+            {bio ||
+              "Aucune bio pour le moment."}
+          </p>
+        </div>
+
+      </div>
+
+      {/* Formulaire */}
       <div>
+
         <h1 className="text-3xl font-black">
           Mon profil
         </h1>
@@ -108,9 +166,11 @@ export default function ProfileEditor({
         <p className="mt-2 text-muted-foreground">
           Personnalisez votre profil.
         </p>
+
       </div>
 
       <div className="space-y-6">
+
         <div>
           <label className="mb-2 block text-sm font-medium">
             Pseudo
@@ -151,14 +211,17 @@ export default function ProfileEditor({
         />
 
         <Button
+          className="w-full"
           disabled={isPending}
           onClick={save}
         >
           {isPending
-            ? "Enregistrement..."
-            : "Enregistrer"}
+            ? "💾 Enregistrement..."
+            : "💾 Enregistrer les modifications"}
         </Button>
+
       </div>
+
     </Card>
   );
 }

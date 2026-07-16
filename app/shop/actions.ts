@@ -19,6 +19,7 @@ export async function buyItemAction(itemId: string) {
 
   return {
     success: true,
+    message: "Objet acheté avec succès !",
   };
 }
 
@@ -36,5 +37,6 @@ export async function equipItemAction(itemId: string) {
 
   return {
     success: true,
+    message: "Objet équipé avec succès !",
   };
 }

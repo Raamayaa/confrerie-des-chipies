@@ -248,79 +248,78 @@ const monthIndex = new Date(game.created_at).getMonth();
 }
 
 static async getRecentActivity(profileId: string) {
-  const [gamesResult, eventsResult, ideasResult] = await Promise.all([
-    supabaseAdmin
-      .from("game_players")
-      .select(`
-        created_at,
-        games(name)
-      `)
-      .eq("profile_id", profileId),
+  const [gamesResult, eventsResult, ideasResult] =
+    await Promise.all([
+      supabaseAdmin
+        .from("game_players")
+        .select(`
+          created_at,
+          games(name)
+        `)
+        .eq("profile_id", profileId),
 
-    supabaseAdmin
-      .from("participants")
-      .select(`
-        created_at,
-        events(title)
-      `)
-      .eq("profile_id", profileId),
+      supabaseAdmin
+        .from("participants")
+        .select(`
+          created_at,
+          events(title)
+        `)
+        .eq("profile_id", profileId),
 
-    supabaseAdmin
-      .from("ideas")
-      .select(`
-        created_at,
-        title
-      `)
-      .eq("profile_id", profileId),
-  ]);
+      supabaseAdmin
+        .from("ideas")
+        .select(`
+          created_at,
+          title
+        `)
+        .eq("profile_id", profileId),
+    ]);
 
   if (gamesResult.error) throw gamesResult.error;
   if (eventsResult.error) throw eventsResult.error;
   if (ideasResult.error) throw ideasResult.error;
 
-  const activity = [
-    ...(gamesResult.data ?? []).map((item) => {
+  const games =
+    (gamesResult.data ?? []).map((item, index) => {
       const game = Array.isArray(item.games)
         ? item.games[0]
         : item.games;
 
       return {
+        id: `game-${index}`,
         type: "game" as const,
         title: game?.name ?? "Jeu",
-        created_at: item.created_at,
+        created_at: item.created_at ?? "",
       };
-    }),
+    });
 
-    ...(eventsResult.data ?? []).map((item) => {
+  const events =
+    (eventsResult.data ?? []).map((item, index) => {
       const event = Array.isArray(item.events)
         ? item.events[0]
         : item.events;
 
       return {
+        id: `event-${index}`,
         type: "event" as const,
         title: event?.title ?? "Événement",
-        created_at: item.created_at,
+        created_at: item.created_at ?? "",
       };
-    }),
+    });
 
-    ...(ideasResult.data ?? []).map((item) => ({
+  const ideas =
+    (ideasResult.data ?? []).map((item, index) => ({
+      id: `idea-${index}`,
       type: "idea" as const,
       title: item.title,
-      created_at: item.created_at,
-    })),
-  ];
+      created_at: item.created_at ?? "",
+    }));
 
-  return activity.sort((a, b) => {
-  const dateA = a.created_at
-    ? new Date(a.created_at).getTime()
-    : 0;
-
-  const dateB = b.created_at
-    ? new Date(b.created_at).getTime()
-    : 0;
-
-  return dateB - dateA;
-});
+  return [...games, ...events, ...ideas].sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() -
+      new Date(a.created_at).getTime()
+  );
 }
 
 static async getProgress(profileId: string) {

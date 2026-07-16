@@ -1,16 +1,12 @@
-import { notFound } from "next/navigation";
-
 import Background from "@/components/shared/Background";
 import Navbar from "@/components/layout/Navbar";
 
-import { ProfileService } from "@/lib/services/profile.service";
+import ProfileHero from "@/components/profile/ProfileHero";
+import ProfileStats from "@/components/profile/ProfileStats";
+import ProfileBadges from "@/components/profile/ProfileBadges";
+import ProfileActivity from "@/components/profile/ProfileActivity";
 
-import MemberHero from "@/components/members/MemberHero";
-import MemberStats from "@/components/members/MemberStats";
-import MemberBadges from "@/components/members/MemberBadges";
-import MemberAchievements from "@/components/members/MemberAchievements";
-import MemberGames from "@/components/members/MemberGames";
-import MemberTimeline from "@/components/members/MemberTimeline";
+import { ProfileService } from "@/lib/services/profile.service";
 
 type Props = {
   params: Promise<{
@@ -23,15 +19,20 @@ export default async function MemberPage({
 }: Props) {
   const { id } = await params;
 
-  const profile = await ProfileService.getProfile(id);
-
-  if (!profile) {
-    notFound();
-  }
-
-  const [progress, rank] = await Promise.all([
+  const [
+    profile,
+    stats,
+    progress,
+    rank,
+    badges,
+    activity,
+  ] = await Promise.all([
+    ProfileService.getProfile(id),
+    ProfileService.getDashboardStats(id),
     ProfileService.getProgress(id),
     ProfileService.getMemberRank(id),
+    ProfileService.getBadges(id),
+    ProfileService.getRecentActivity(id),
   ]);
 
   return (
@@ -39,28 +40,29 @@ export default async function MemberPage({
       <Background />
       <Navbar />
 
-      <main className="mx-auto max-w-7xl space-y-8 px-8 pb-20 pt-36">
-        {/* Hero */}
-        <MemberHero
+      <main className="mx-auto max-w-6xl space-y-10 px-8 pb-20 pt-36">
+
+        <ProfileHero
           profile={profile}
           progress={progress}
           rank={rank}
         />
 
-        {/* Statistiques */}
-        <MemberStats profileId={id} />
+        <ProfileStats
+          profile={profile}
+          stats={stats}
+          progress={progress}
+          rank={rank}
+        />
 
-        {/* Succès */}
-        <MemberAchievements profileId={id} />
+        <ProfileBadges
+          badges={badges}
+        />
 
-        {/* Badges */}
-        <MemberBadges profileId={id} />
+        <ProfileActivity
+          activity={activity}
+        />
 
-        {/* Jeux */}
-        <MemberGames profileId={id} />
-
-        {/* Activité récente */}
-        <MemberTimeline profileId={id} />
       </main>
     </>
   );

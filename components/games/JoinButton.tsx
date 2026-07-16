@@ -1,112 +1,56 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 
+import {
+  joinGameAction,
+  leaveGameAction,
+} from "@/lib/actions/games";
+
 type Props = {
   gameId: string;
+  joined: boolean;
 };
 
-export default function JoinButton({ gameId }: Props) {
-  const { data: session, status } = useSession();
+export default function JoinButton({
+  gameId,
+  joined,
+}: Props) {
   const router = useRouter();
 
-  const [loading, setLoading] = useState(false);
-  const [checking, setChecking] = useState(true);
-  const [joined, setJoined] = useState(false);
+  const [isPending, startTransition] =
+    useTransition();
 
-  useEffect(() => {
-    async function checkStatus() {
-      if (status === "loading") return;
+  function handleClick() {
+    startTransition(async () => {
+      const result = joined
+        ? await leaveGameAction(gameId)
+        : await joinGameAction(gameId);
 
-      if (!session?.user) {
-        setChecking(false);
-        setJoined(false);
+      if (!result.success) {
+        alert(result.error);
         return;
       }
-
-      try {
-        const res = await fetch("/api/games/status", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ gameId }),
-        });
-
-        const result = await res.json();
-
-        setJoined(Boolean(result.joined));
-      } catch (error) {
-        console.error("Erreur status :", error);
-      } finally {
-        setChecking(false);
-      }
-    }
-
-    checkStatus();
-  }, [gameId, session, status]);
-
-  async function toggleParticipation() {
-    if (!session?.user) {
-      alert("Tu dois te connecter avec Discord.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const endpoint = joined
-        ? "/api/games/leave"
-        : "/api/games/join";
-
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ gameId }),
-      });
-
-      const result = await res.json();
-
-      if (!res.ok) {
-        alert(result.error ?? "Une erreur est survenue.");
-        return;
-      }
-
-      setJoined((prev) => !prev);
 
       router.refresh();
-    } catch (error) {
-      console.error(error);
-      alert("Impossible de contacter le serveur.");
-    } finally {
-      setLoading(false);
-    }
+    });
   }
 
   return (
     <Button
       type="button"
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleParticipation();
-      }}
-      disabled={loading || checking}
-      className={`mt-6 w-full transition-colors ${
+      onClick={handleClick}
+      disabled={isPending}
+      className={
         joined
-          ? "bg-green-600 hover:bg-red-600 text-white"
+          ? "bg-green-600 text-white hover:bg-red-600"
           : ""
-      }`}
+      }
     >
-      {checking
-        ? "🔎 Vérification..."
-        : loading
+      {isPending
         ? "⏳ Chargement..."
         : joined
         ? "🚪 Quitter le jeu"

@@ -4,12 +4,20 @@ import {
 } from "../repositories/inventory";
 
 export class InventoryService {
+  /**
+   * Récupère l'inventaire d'un membre.
+   */
   static async getInventory(
     profileId: string
   ): Promise<InventoryItem[]> {
-    return InventoryRepository.getInventory(profileId);
+    return InventoryRepository.getInventory(
+      profileId
+    );
   }
 
+  /**
+   * Équipe un objet.
+   */
   static async equipItem(
     profileId: string,
     itemId: string

@@ -10,6 +10,7 @@ import {
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 import {
   rarityBorder,
@@ -49,30 +50,44 @@ export default function ShopItem({
     useTransition();
 
   function buy() {
-    startTransition(async () => {
-      try {
-        await buyItemAction(item.id);
-        router.refresh();
-      } catch (error) {
-        if (error instanceof Error) {
-          alert(error.message);
-        }
-      }
-    });
-  }
+  startTransition(async () => {
+    try {
+      await buyItemAction(item.id);
 
-  function equip() {
-    startTransition(async () => {
-      try {
-        await equipItemAction(item.id);
-        router.refresh();
-      } catch (error) {
-        if (error instanceof Error) {
-          alert(error.message);
-        }
+      toast.success("Objet acheté !", {
+        description: `${item.name} a été ajouté à votre inventaire.`,
+      });
+
+      router.refresh();
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error("Achat impossible", {
+          description: error.message,
+        });
       }
-    });
-  }
+    }
+  });
+}
+
+function equip() {
+  startTransition(async () => {
+    try {
+      await equipItemAction(item.id);
+
+      toast.success("Objet équipé !", {
+        description: `${item.name} est maintenant équipé.`,
+      });
+
+      router.refresh();
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error("Impossible d'équiper l'objet", {
+          description: error.message,
+        });
+      }
+    }
+  });
+}
 
   return (
     <Card
@@ -138,11 +153,11 @@ export default function ShopItem({
           </Button>
         ) : (
           <Button
-            disabled={isPending}
-            onClick={buy}
-          >
-            🛒 Acheter
-          </Button>
+  disabled={isPending}
+  onClick={buy}
+>
+  {isPending ? "⏳ Achat..." : "🛒 Acheter"}
+</Button>
         )}
       </div>
     </Card>

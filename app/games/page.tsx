@@ -1,16 +1,28 @@
-import Link from "next/link";
-import Image from "next/image";
+import { auth } from "@/auth";
 
 import Background from "@/components/shared/Background";
 import Navbar from "@/components/layout/Navbar";
 
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import GameCard from "@/components/games/GameCard";
 
 import { GameService } from "@/lib/services/game.service";
 
 export default async function GamesPage() {
+  const session = await auth();
+
   const games = await GameService.getGames();
+
+  const joinedGames = session?.user?.id
+    ? await GameService.getMyGames(session.user.id)
+    : [];
+
+  const joinedIds = new Set(
+    joinedGames
+      .map((game) => game.games?.id)
+      .filter(
+        (id): id is string => Boolean(id)
+      )
+  );
 
   return (
     <>
@@ -24,51 +36,23 @@ export default async function GamesPage() {
           </h1>
 
           <p className="mt-4 text-lg text-muted-foreground">
-            Retrouvez tous les jeux auxquels joue la communauté et rejoignez vos
-            partenaires de jeu.
+            Rejoins les jeux de la communauté et gagne de l&aposXP.
           </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
           {games.map((game) => (
-            <Card
+            <GameCard
               key={game.id}
-              className="overflow-hidden rounded-3xl border-0 bg-card shadow-xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
-            >
-              <div className="relative h-60">
-                <Image
-                  src={game.image ?? "/images/default-game.jpg"}
-                  alt={game.name}
-                  fill
-                  className="object-cover"
-                />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-
-                <div className="absolute bottom-5 left-5">
-                  <h2 className="text-3xl font-black text-white">
-                    {game.name}
-                  </h2>
-                </div>
-              </div>
-
-              <div className="p-6">
-                <p className="line-clamp-3 text-muted-foreground">
-                  {game.description ??
-                    "Aucune description disponible pour ce jeu."}
-                </p>
-
-                <div className="mt-6 flex items-center justify-between">
-                  <span className="rounded-full bg-violet-500/10 px-4 py-2 text-sm font-semibold text-violet-400">
-  🎮 Jeu disponible
-</span>
-
-                  <Link href={`/games/${game.id}`}>
-                    <Button>Voir</Button>
-                  </Link>
-                </div>
-              </div>
-            </Card>
+              game={{
+                id: game.id,
+                name: game.name,
+                image: game.image,
+                description: game.description,
+                players: game.players,
+              }}
+              joined={joinedIds.has(game.id)}
+            />
           ))}
         </div>
       </main>

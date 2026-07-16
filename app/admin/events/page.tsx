@@ -17,22 +17,22 @@ export default async function AdminEventsPage() {
         title="📅 Événements"
         description="Gère les événements de la communauté."
         action={
-          <Link href="/admin/events/new">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Nouvel événement
-            </Button>
-          </Link>
-        }
+  <Link href="/admin/events/new">
+    <Button>
+      <Plus className="mr-2 h-4 w-4" />
+      Nouvel événement
+    </Button>
+  </Link>
+}
       />
 
-      {events.length === 0 ? (
+      {events.length > 0 ? (
+        <AdminEventsTable events={events} />
+      ) : (
         <EmptyState
           title="Aucun événement"
           description="Commence par créer ton premier événement."
         />
-      ) : (
-        <AdminEventsTable events={events} />
       )}
     </>
   );

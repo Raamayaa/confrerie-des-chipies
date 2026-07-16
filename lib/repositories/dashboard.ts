@@ -24,7 +24,7 @@ type GameRow = {
 
 type ActivityRow = {
   id: string;
-  action: string;
+  message: string;
   created_at: string | null;
   profiles:
     | {
@@ -35,23 +35,44 @@ type ActivityRow = {
 };
 
 export class DashboardRepository {
+  // ==========================
+  // Statistiques
+  // ==========================
+
   static async getStats() {
-    const [games, events, profiles, ideas] = await Promise.all([
+    const [
+      games,
+      events,
+      profiles,
+      ideas,
+    ] = await Promise.all([
       supabaseAdmin
         .from("games")
-        .select("*", { count: "exact", head: true }),
+        .select("*", {
+          count: "exact",
+          head: true,
+        }),
 
       supabaseAdmin
         .from("events")
-        .select("*", { count: "exact", head: true }),
+        .select("*", {
+          count: "exact",
+          head: true,
+        }),
 
       supabaseAdmin
         .from("profiles")
-        .select("*", { count: "exact", head: true }),
+        .select("*", {
+          count: "exact",
+          head: true,
+        }),
 
       supabaseAdmin
         .from("ideas")
-        .select("*", { count: "exact", head: true }),
+        .select("*", {
+          count: "exact",
+          head: true,
+        }),
     ]);
 
     return {
@@ -62,6 +83,10 @@ export class DashboardRepository {
     };
   }
 
+  // ==========================
+  // Evénements à venir
+  // ==========================
+
   static async getUpcomingEvents() {
     const { data, error } = await supabaseAdmin
       .from("events")
@@ -71,7 +96,10 @@ export class DashboardRepository {
         event_date,
         game:games(name)
       `)
-      .gte("event_date", new Date().toISOString())
+      .gte(
+        "event_date",
+        new Date().toISOString()
+      )
       .order("event_date")
       .limit(5);
 
@@ -80,14 +108,20 @@ export class DashboardRepository {
     }
 
     return (
-      (data as unknown as EventRow[] | null)?.map((event) => ({
-        id: event.id,
-        title: event.title,
-        event_date: event.event_date,
-        game: event.game?.[0] ?? null,
-      })) ?? []
+      (data as EventRow[] | null)?.map(
+        (event) => ({
+          id: event.id,
+          title: event.title,
+          event_date: event.event_date,
+          game: event.game?.[0] ?? null,
+        })
+      ) ?? []
     );
   }
+
+  // ==========================
+  // Jeux populaires
+  // ==========================
 
   static async getPopularGames() {
     const { data, error } = await supabaseAdmin
@@ -97,36 +131,48 @@ export class DashboardRepository {
         name,
         image,
         game_players(count)
-      `)
-      .limit(5);
+      `);
 
     if (error) {
       throw error;
     }
 
     return (
-      (data as unknown as GameRow[] | null)?.map((game) => ({
-        id: game.id,
-        name: game.name,
-        image: game.image,
-        game_players: game.game_players ?? [],
-      })) ?? []
+      (data as GameRow[] | null)
+        ?.map((game) => ({
+          id: game.id,
+          name: game.name,
+          image: game.image,
+          players:
+            game.game_players?.length ?? 0,
+        }))
+        .sort(
+          (a, b) =>
+            b.players - a.players
+        )
+        .slice(0, 5) ?? []
     );
   }
+
+  // ==========================
+  // Activité récente
+  // ==========================
 
   static async getRecentActivity() {
     const { data, error } = await supabaseAdmin
       .from("activity")
       .select(`
         id,
-        action,
+        message,
         created_at,
         profiles(
           username,
           avatar
         )
       `)
-      .order("created_at", { ascending: false })
+      .order("created_at", {
+        ascending: false,
+      })
       .limit(8);
 
     if (error) {
@@ -134,12 +180,15 @@ export class DashboardRepository {
     }
 
     return (
-      (data as unknown as ActivityRow[] | null)?.map((activity) => ({
-        id: activity.id,
-        action: activity.action,
-        created_at: activity.created_at,
-        profiles: activity.profiles?.[0] ?? null,
-      })) ?? []
+      (data as ActivityRow[] | null)?.map(
+        (activity) => ({
+          id: activity.id,
+          message: activity.message,
+          created_at: activity.created_at,
+          profile:
+            activity.profiles?.[0] ?? null,
+        })
+      ) ?? []
     );
   }
 }

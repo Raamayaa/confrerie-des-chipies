@@ -1,103 +1,219 @@
 import { ProfilesRepository } from "../repositories/profiles";
 
 export class ProfileService {
-  static getProfile(id: string) {
+  /**
+   * Profil d'un membre.
+   */
+  static async getProfile(id: string) {
     return ProfilesRepository.getProfile(id);
   }
 
-  static getProfileFromDiscord(discordId: string) {
-    return ProfilesRepository.getByDiscordId(discordId);
+  /**
+   * Profil depuis l'identifiant Discord.
+   */
+  static async getProfileFromDiscord(
+    discordId: string
+  ) {
+    return ProfilesRepository.getByDiscordId(
+      discordId
+    );
   }
 
-  static getMembers() {
+  /**
+   * Tous les membres.
+   */
+  static async getMembers() {
     return ProfilesRepository.getAll();
   }
 
+  /**
+   * Mise à jour du profil.
+   */
   static async updateProfile(
-  id: string,
-  values: {
-    username?: string;
-    avatar?: string;
-    bio?: string;
-    banner?: string;
+    id: string,
+    values: {
+      username?: string;
+      avatar?: string;
+      bio?: string;
+      banner?: string;
+    }
+  ) {
+    return ProfilesRepository.update(
+      id,
+      values
+    );
   }
-) {
-  return ProfilesRepository.update(id, values);
-}
 
-  static isAdmin(profileId: string) {
-    return ProfilesRepository.isAdmin(profileId);
+  /**
+   * Vérifie si le membre est administrateur.
+   */
+  static async isAdmin(
+    profileId: string
+  ) {
+    return ProfilesRepository.isAdmin(
+      profileId
+    );
   }
 
-  static updateRole(
+  /**
+   * Change le rôle d'un membre.
+   */
+  static async updateRole(
     profileId: string,
     role: "admin" | "member"
   ) {
-    return ProfilesRepository.updateRole(profileId, role);
+    return ProfilesRepository.updateRole(
+      profileId,
+      role
+    );
   }
 
-  static getDashboardStats(profileId: string) {
-    return ProfilesRepository.getDashboardStats(profileId);
+  /**
+   * Statistiques du tableau de bord.
+   */
+  static async getDashboardStats(
+    profileId: string
+  ) {
+    return ProfilesRepository.getDashboardStats(
+      profileId
+    );
   }
 
-  static getMonthlyActivity(profileId: string) {
-    return ProfilesRepository.getMonthlyActivity(profileId);
+  /**
+   * Activité mensuelle.
+   */
+  static async getMonthlyActivity(
+    profileId: string
+  ) {
+    return ProfilesRepository.getMonthlyActivity(
+      profileId
+    );
   }
 
-  static getLeaderboard() {
+  /**
+   * Classement général.
+   */
+  static async getLeaderboard() {
     return ProfilesRepository.getLeaderboard();
   }
 
-  static getRecentActivity(profileId: string) {
-    return ProfilesRepository.getRecentActivity(profileId);
+  /**
+   * Activité récente.
+   */
+  static async getRecentActivity(
+    profileId: string
+  ) {
+    return ProfilesRepository.getRecentActivity(
+      profileId
+    );
   }
 
-  static getProgress(profileId: string) {
-    return ProfilesRepository.getProgress(profileId);
+  /**
+   * Progression.
+   */
+  static async getProgress(
+    profileId: string
+  ) {
+    return ProfilesRepository.getProgress(
+      profileId
+    );
   }
 
-  static getBadges(profileId: string) {
-    return ProfilesRepository.getBadges(profileId);
+  /**
+   * Badges.
+   */
+  static async getBadges(
+    profileId: string
+  ) {
+    return ProfilesRepository.getBadges(
+      profileId
+    );
   }
 
-  static getDailyMissions(profileId: string) {
-    return ProfilesRepository.getDailyMissions(profileId);
+  /**
+   * Missions quotidiennes.
+   */
+  static async getDailyMissions(
+    profileId: string
+  ) {
+    return ProfilesRepository.getDailyMissions(
+      profileId
+    );
   }
 
-  static getMemberGames(profileId: string) {
-  return ProfilesRepository.getMemberGames(profileId);
-}
+  /**
+   * Jeux du membre.
+   */
+  static async getMemberGames(
+    profileId: string
+  ) {
+    return ProfilesRepository.getMemberGames(
+      profileId
+    );
+  }
 
-static getMemberRank(profileId: string) {
-  return ProfilesRepository.getMemberRank(profileId);
-}
+  /**
+   * Rang du membre.
+   */
+  static async getMemberRank(
+    profileId: string
+  ) {
+    return ProfilesRepository.getMemberRank(
+      profileId
+    );
+  }
 
-static getAchievements(profileId: string) {
-  return ProfilesRepository.getAchievements(profileId);
-}
+  /**
+   * Succès du membre.
+   */
+  static async getAchievements(
+    profileId: string
+  ) {
+    return ProfilesRepository.getAchievements(
+      profileId
+    );
+  }
 
-static unlockAchievement(
-  profileId: string,
-  achievementId: string
-) {
-  return ProfilesRepository.unlockAchievement(
-    profileId,
-    achievementId
-  );
-}
+  /**
+   * Débloque un succès.
+   */
+  static async unlockAchievement(
+    profileId: string,
+    achievementId: string
+  ) {
+    return ProfilesRepository.unlockAchievement(
+      profileId,
+      achievementId
+    );
+  }
 
-static getCoins(profileId: string) {
-  return ProfilesRepository.getCoins(profileId);
-}
+  /**
+   * Nombre de pièces.
+   */
+  static async getCoins(
+    profileId: string
+  ) {
+    return ProfilesRepository.getCoins(
+      profileId
+    );
+  }
 
-static addCoins(
-  profileId: string,
-  amount: number
-) {
-  return ProfilesRepository.addCoins(
-    profileId,
-    amount
-  );
-}
+  /**
+   * Ajoute des pièces.
+   */
+  static async addCoins(
+    profileId: string,
+    amount: number
+  ) {
+    if (amount <= 0) {
+      throw new Error(
+        "Montant invalide."
+      );
+    }
 
+    return ProfilesRepository.addCoins(
+      profileId,
+      amount
+    );
+  }
 }
