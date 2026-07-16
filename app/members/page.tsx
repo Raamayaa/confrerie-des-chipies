@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Background from "@/components/shared/Background";
 import Navbar from "@/components/layout/Navbar";
 
